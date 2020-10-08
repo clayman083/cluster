@@ -48,11 +48,9 @@ traefik_service:
   host: "{{ traefik_insecure_host }}"
   port: "{{ traefik_insecure_port }}"
   tags:
-    - "{{ env }}"
     - "{{ tier }}"
   meta:
     hostname: "{{ ansible_hostname }}"
-    env: "{{ env }}"
     tier: "{{ tier }}"
 
 traefik_secure_service:
@@ -60,11 +58,9 @@ traefik_secure_service:
   host: "{{ traefik_secure_host }}"
   port: "{{ traefik_secure_port }}"
   tags:
-    - "{{ env }}"
     - "{{ tier }}"
   meta:
     hostname: "{{ ansible_hostname }}"
-    env: "{{ env }}"
     tier: "{{ tier }}"
 
 traefik_exporter_service:
@@ -72,9 +68,7 @@ traefik_exporter_service:
   host: "{{ traefik_exporter_host }}"
   port: "{{ traefik_exporter_port }}"
   tags:
-    - "{{ env }}"
     - "{{ tier }}"
   meta:
     hostname: "{{ ansible_hostname }}"
-    env: "{{ env }}"
     tier: "{{ tier }}"
