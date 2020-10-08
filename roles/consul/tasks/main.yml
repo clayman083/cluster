@@ -8,8 +8,3 @@
   when: consul_exporter_enabled|default(false)
   tags:
     - consul
-
-- import_tasks: services.yml
-  when: consul_services|default([])
-  tags:
-    - consul

@@ -4,5 +4,5 @@
   template: src=services.json.j2 dest="{{ consul_conf_dir }}/{{ item.name }}.json"
   vars:
     entries: "{{ item.entries }}"
-  with_items: "{{ consul_services }}"
+  with_items: "{{ services }}"
   notify: reload consul
