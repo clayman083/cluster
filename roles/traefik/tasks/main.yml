@@ -1,0 +1,10 @@
+---
+
+- import_tasks: server.yml
+  tags:
+    - traefik
+
+# - import_tasks: auth.yml
+#   when: traefik_basic_auth|default([])
+#   tags:
+#     - traefik

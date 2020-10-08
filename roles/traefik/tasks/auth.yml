@@ -1,0 +1,5 @@
+---
+
+- name: Generate basic auth credentials
+  htpasswd: path={{ traefik_conf_dir }}/{{ item.name }}.htpasswd name={{ item.name }} password={{ item.password }}
+  with_items: traefik_basic_auth

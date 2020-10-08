@@ -1,0 +1,58 @@
+---
+
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+  metrics:
+    address: :8800
+
+api:
+  dashboard: true
+  insecure: true
+
+providers:
+{% if traefik_file_provider|default(false) %}
+  file:
+    directory: {{ traefik_file_provider_dir }}
+    watch: true
+{% endif %}
+
+{% if traefik_consul_provider|default(False) %}
+  consulCatalog:
+    endpoint:
+      address: http://{{ traefik_consul_provider_host }}:{{ traefik_consul_provider_port }}
+    exposedByDefault: false
+{% endif %}
+
+{% if traefik_docker_provider|default(False) %}
+  docker: {}
+{% endif %}
+
+{% if traefik_letsencrypt|default(False) %}
+certificatesResolvers:
+  {{ traefik_letsencrypt_resolver }}:
+    acme:
+      email: {{ traefik_letsencrypt_email }}
+      storage: /etc/traefik/acme.json
+      httpChallenge:
+        entryPoint: web
+{% endif %}
+
+{% if traefik_access_log_enabled %}
+accessLog: {}
+{% endif %}
+
+log:
+  level: INFO
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    entryPoint: metrics
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0

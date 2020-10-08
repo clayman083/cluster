@@ -1,0 +1,36 @@
+---
+
+- name: Prepare folders
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "{{ traefik_service_dir }}"
+    - "{{ traefik_certs_dir }}"
+    - "{{ traefik_conf_dir }}"
+
+- name: Assemble config files
+  template: src=traefik.yml.j2 dest={{ traefik_service_dir }}/traefik.yml backup=true
+  notify: reload traefik
+
+- name: Pull image
+  docker_image: name={{ traefik_image }} source=pull
+
+- name: Run traefik container
+  docker_container:
+    name: "{{ traefik_container_name }}"
+    image: "{{ traefik_image }}"
+    hostname: "{{ traefik_container_hostname }}"
+    dns_servers: "{{ traefik_container_dns_servers }}"
+    labels: "{{ traefik_container_labels }}"
+    log_driver: "{{ traefik_container_log_driver }}"
+    log_options: "{{ traefik_container_log_options }}"
+    networks: "{{ traefik_container_networks|default([]) }}"
+    published_ports:
+      - "{{ traefik_insecure_host }}:{{ traefik_insecure_port }}:80"
+      - "{{ traefik_secure_host }}:{{ traefik_secure_port }}:443"
+      - "{{ traefik_exporter_host }}:{{ traefik_exporter_port }}:8800"
+    restart_policy: "{{ traefik_container_restart_policy }}"
+    volumes:
+      - "{{ traefik_service_dir }}/traefik.yml:/etc/traefik/traefik.yaml"
+      - "{{ traefik_certs_dir }}:/etc/traefik/certs"
+      - "{{ traefik_conf_dir }}:{{ traefik_file_provider_dir }}"
+      - /var/run/docker.sock:/var/run/docker.sock:ro

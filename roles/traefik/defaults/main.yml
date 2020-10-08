@@ -1,0 +1,80 @@
+---
+
+traefik_service_dir: /opt/services/traefik
+traefik_certs_dir: "{{ traefik_service_dir }}/certs"
+traefik_conf_dir: "{{ traefik_service_dir }}/conf.d"
+
+traefik_consul_provider: false
+traefik_consul_provider_host: localhost
+traefik_consul_provider_port: 8500
+
+traefik_docker_provider: false
+
+traefik_file_provider: true
+traefik_file_provider_dir: /etc/traefik/conf.d
+
+traefik_access_log_enabled: false
+
+traefik_image: traefik:latest
+
+traefik_container_name: traefik
+traefik_container_hostname: "{{ ansible_hostname }}"
+traefik_container_labels: {}
+traefik_container_dns_servers: []
+traefik_container_log_driver: syslog
+traefik_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: traefik
+traefik_container_networks: []
+traefik_container_restart_policy: always
+
+traefik_insecure_host: localhost
+traefik_insecure_port: 80
+
+traefik_secure_host: localhost
+traefik_secure_port: 443
+
+traefik_exporter_host: localhost
+traefik_exporter_port: 8800
+
+traefik_basic_auth: []
+
+traefik_letsencrypt: false
+traefik_letsencrypt_email: ''
+traefik_letsencrypt_resolver: acmeresolver
+
+traefik_service:
+  name: traefik
+  host: "{{ traefik_insecure_host }}"
+  port: "{{ traefik_insecure_port }}"
+  tags:
+    - "{{ env }}"
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    env: "{{ env }}"
+    tier: "{{ tier }}"
+
+traefik_secure_service:
+  name: traefik-secure
+  host: "{{ traefik_secure_host }}"
+  port: "{{ traefik_secure_port }}"
+  tags:
+    - "{{ env }}"
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    env: "{{ env }}"
+    tier: "{{ tier }}"
+
+traefik_exporter_service:
+  name: traefik-exporter
+  host: "{{ traefik_exporter_host }}"
+  port: "{{ traefik_exporter_port }}"
+  tags:
+    - "{{ env }}"
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    env: "{{ env }}"
+    tier: "{{ tier }}"
