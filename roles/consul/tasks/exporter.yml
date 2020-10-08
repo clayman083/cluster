@@ -1,0 +1,17 @@
+---
+
+- name: Pull consul exporter image
+  docker_image: name={{ consul_exporter_image }} source=pull
+
+- name: Run consul exporter container
+  docker_container:
+    name: "{{ consul_exporter_container_name }}"
+    image: "{{ consul_exporter_image }}"
+    command: "--consul.server={{ consul_host }}:{{ consul_port }}"
+    labels: "{{ consul_exporter_container_labels }}"
+    log_driver: "{{ consul_exporter_container_log_driver }}"
+    log_options: "{{ consul_exporter_container_log_options }}"
+    networks: "{{ consul_exporter_container_networks|default([]) }}"
+    published_ports:
+      - "{{ consul_exporter_host }}:{{ consul_exporter_port }}:9107"
+    restart_policy: "{{ consul_exporter_container_restart_policy }}"

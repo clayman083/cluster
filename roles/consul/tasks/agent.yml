@@ -1,0 +1,46 @@
+---
+
+- name: Prepare folders
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "{{ consul_service_dir }}"
+    - "{{ consul_conf_dir }}"
+
+- name: Assemble consul agent config
+  template: src=config.json.j2 dest={{ consul_service_dir }}/config.json backup=true
+
+- name: Assemble dnsmasq config
+  template: src={{ item.src }}.j2 dest={{ item.dest }}
+  with_items:
+    - src: dnsmasq.conf
+      dest: "{{ dnsmasq_conf_dir }}/consul.conf"
+  notify: restart dnsmasq
+
+- name: Pull image
+  docker_image: name={{ consul_image }} source=pull
+
+- name: Create volume container
+  docker_volume: name={{ consul_volume }}
+
+- name: Run container
+  docker_container:
+    name: "{{ consul_container_name }}"
+    image: "{{ consul_image }}"
+    command: consul agent -config-file /etc/consul/config.json -config-dir /etc/consul/conf.d
+    labels: "{{ consul_container_labels }}"
+    log_driver: "{{ consul_container_log_driver }}"
+    log_options: "{{ consul_container_log_options }}"
+    networks: "{{ consul_container_networks|default([]) }}"
+    published_ports:
+      - "{{ consul_host }}:8300:8300"
+      - "{{ consul_host }}:8301:8301"
+      - "{{ consul_host }}:8301:8301/udp"
+      - "{{ consul_host }}:8302:8302"
+      - "{{ consul_host }}:8302:8302/udp"
+      - "{{ consul_host }}:8400:8300"
+      - "{{ consul_host }}:{{ consul_port }}:8500"
+      - "{{ consul_host }}:8600:8600/udp"
+    restart_policy: "{{ consul_container_restart_policy }}"
+    volumes:
+      - "{{ consul_service_dir }}:/etc/consul"
+      - "{{ consul_volume }}:/consul/data"

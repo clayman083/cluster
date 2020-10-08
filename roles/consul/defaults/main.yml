@@ -1,0 +1,78 @@
+---
+
+dnsmasq_conf_dir: /etc/dnsmasq.d
+
+consul_service_dir: /opt/services/consul
+consul_conf_dir: "{{ consul_service_dir }}/conf.d"
+
+consul_service: consul.service.consul
+
+# Consul agent settings
+consul_host: localhost
+consul_port: 8500
+
+consul_agent_server: false
+consul_agent_datacenter: dc
+consul_agent_node: "{{ ansible_hostname }}"
+consul_agent_encrypt: ""
+consul_agent_servers: []
+
+consul_image: consul:latest
+consul_container_name: consul
+consul_container_labels: {}
+consul_container_log_driver: syslog
+consul_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: consul
+consul_container_networks: []
+consul_container_restart_policy: always
+
+consul_volume: "{{ consul_container_name }}_data"
+
+consul_web_service:
+  name: consul-web
+  host: "{{ consul_host }}"
+  port: "{{ consul_port }}"
+  tags:
+    - "{{ env }}"
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    env: "{{ env }}"
+    tier: "{{ tier }}"
+
+
+# Consul exporter settings
+consul_exporter_enabled: false
+
+consul_exporter_host: localhost
+consul_exporter_port: 9107
+
+consul_exporter_image: prom/consul-exporter:latest
+consul_exporter_container_name: consul_exporter
+consul_exporter_container_labels: {}
+consul_exporter_container_log_driver: syslog
+consul_exporter_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: consul_exporter
+consul_exporter_container_networks: []
+consul_exporter_container_restart_policy: always
+
+consul_exporter_service:
+  name: consul-exporter
+  host: "{{ consul_exporter_host }}"
+  port: "{{ consul_exporter_port }}"
+  tags:
+    - "{{ env }}"
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    env: "{{ env }}"
+    tier: "{{ tier }}"
+  checks:
+    - id: "consul_exporter_check"
+      name: "Prometheus exporter for Consul metrics"
+      http: "http://{{ consul_exporter_host }}:{{ consul_exporter_port }}"
+      interval: "10s"
+
+consul_services: []

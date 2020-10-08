@@ -1,0 +1,8 @@
+---
+
+- name: Assemble consul service config
+  template: src=services.json.j2 dest="{{ consul_conf_dir }}/{{ item.name }}.json"
+  vars:
+    entries: "{{ item.entries }}"
+  with_items: "{{ consul_services }}"
+  notify: reload consul

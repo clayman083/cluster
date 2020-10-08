@@ -1,0 +1,5 @@
+---
+
+- name: Reload consul  # noqa 305
+  shell: docker kill -s HUP {{ consul_container_name }}
+  listen: "reload consul"

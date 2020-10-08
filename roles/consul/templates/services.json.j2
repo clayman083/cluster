@@ -1,0 +1,37 @@
+{
+  "services": [
+{% for service in entries %}
+    {
+      "name": "{{ service.name }}",
+{% if service.tags %}
+      "tags": ["{{ service.tags|join('", "') }}"],
+{% endif %}
+{% if service.meta %}
+      "meta": {
+{% for key, value in service.meta.items() %}
+        "{{ key }}": "{{ value }}"{% if not loop.last %},{% endif %}
+
+{% endfor %}
+      },
+{% endif %}
+      "address": "{{ service.host }}",
+      "port": {{ service.port }}{% if service.checks|default(False) %},{% endif %}
+
+{% if service.checks|default(False) %}
+      "checks": [
+{% for check in service.checks %}
+        {
+          "id": "{{ check.id }}",
+          "name": "{{ check.name }}",
+          "http": "{{ check.http }}",
+          "interval": "{{ check.interval }}"
+        }{% if not loop.last %},{% endif %}
+
+{% endfor %}
+      ]
+{% endif %}
+    }{% if not loop.last %},{% endif %}
+
+{% endfor %}
+  ]
+}
