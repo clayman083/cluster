@@ -1,0 +1,12 @@
+---
+
+- name: Install dnsmasq
+  apt:
+    name: dnsmasq
+
+- name: Create folders
+  file: path={{ dnsmasq_conf }} state=directory
+
+- name: Update config file
+  template: src=dnsmasq.conf.j2 dest=/etc/dnsmasq.conf
+  notify: restart dnsmasq
