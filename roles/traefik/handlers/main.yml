@@ -1,5 +1,5 @@
 ---
 
 - name: Reload traefik  # noqa 305
-  shell: docker kill -s HUP {{ traefik_container_name }}
+  shell: docker restart {{ traefik_container_name }}
   listen: "reload traefik"

@@ -24,6 +24,9 @@ providers:
     endpoint:
       address: http://{{ traefik_consul_provider_host }}:{{ traefik_consul_provider_port }}
     exposedByDefault: false
+{% if traefik_consul_provider_constraints|default(False) %}
+    constraints: "{{ traefik_consul_provider_constraints }}"
+{% endif %}
 {% endif %}
 
 {% if traefik_docker_provider|default(False) %}

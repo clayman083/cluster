@@ -7,6 +7,7 @@ traefik_conf_dir: "{{ traefik_service_dir }}/conf.d"
 traefik_consul_provider: false
 traefik_consul_provider_host: localhost
 traefik_consul_provider_port: 8500
+traefik_consul_provider_constraints: ''
 
 traefik_docker_provider: false
 
