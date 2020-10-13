@@ -1,5 +1,7 @@
 ---
 
+traefik_enabled: false
+
 traefik_service_dir: /opt/services/traefik
 traefik_certs_dir: "{{ traefik_service_dir }}/certs"
 traefik_conf_dir: "{{ traefik_service_dir }}/conf.d"
