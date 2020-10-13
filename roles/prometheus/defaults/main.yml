@@ -104,7 +104,6 @@ prometheus_server_jobs: []
 prometheus_server_rules: []
 prometheus_server_exporters: []
 prometheus_server_blackbox_targets: []
-prometheus_server_apps: []
 
 prometheus_server_consul_host: localhost
 prometheus_server_consul_port: 8500

@@ -64,12 +64,13 @@ scrape_configs:
         replacement: {{ blackbox_host }}:{{ blackbox_port }}  # The blackb
 {% endif %}
 
-{% if prometheus_server_apps %}
-  - job_name: 'apps'
-    metrics_path: /-/metrics
+{% for job in prometheus_server_jobs|default([]) %}
+  - job_name: '{{ job.name }}'
+    metrics_path: {{ job.metrics_path }}
+{% if job.consul_config %}
     consul_sd_configs:
       - server: '{{ prometheus_server_consul_host }}:{{ prometheus_server_consul_port }}'
-        services: [{% for app in prometheus_server_apps %}'{{ app }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+        services: [{% for service in job.services %}'{{ service }}'{% if not loop.last %}, {% endif %}{% endfor %}]
     relabel_configs:
       - source_labels: ['__meta_consul_service']
         target_label: app_name
@@ -84,3 +85,4 @@ scrape_configs:
         target_label:  'tier'
         replacement:   '$1'
 {% endif %}
+{% endfor %}
