@@ -1,0 +1,41 @@
+---
+
+- name: Prepare folders
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ grafana_dir }}"
+    - "{{ grafana_dashboards_dir }}"
+
+- name: Assemble datasources config
+  template: src=datasources.yml.j2 dest={{ grafana_dir }}/datasources.yml
+  when: grafana_datasource_prometheus|default(False) or grafana_datasource_loki|default(False)
+  notify: restart grafana
+
+- name: Pull image
+  docker_image: name={{ grafana_image }} source=pull
+
+- name: Create volume container
+  docker_volume: name={{ grafana_volume }}
+
+- name: Run container
+  docker_container:
+    name: "{{ grafana_container_name }}"
+    image: "{{ grafana_image }}"
+    dns_servers: "{{ grafana_container_dns_servers }}"
+    env:
+      GF_SECURITY_ADMIN_USER: "{{ grafana_auth_user }}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_auth_password }}"
+      GF_SERVER_ROOT_URL: "{{ grafana_domain }}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    labels: "{{ grafana_container_labels }}"
+    log_driver: "{{ grafana_container_log_driver }}"
+    log_options: "{{ grafana_container_log_options }}"
+    networks: "{{ grafana_container_networks|default([]) }}"
+    published_ports:
+      - "{{ grafana_host }}:{{ grafana_port }}:3000"
+    restart_policy: "{{ grafana_container_restart_policy }}"
+    volumes:
+      - "{{ grafana_volume }}:/var/lib/grafana"
+      - "{{ grafana_dir }}/datasources.yml:/etc/grafana/provisioning/datasources/all.yml"
+      - "{{ grafana_dashboards_dir }}:/etc/grafana/provisioning/dashboards"
+

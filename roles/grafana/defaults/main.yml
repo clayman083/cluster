@@ -1,0 +1,37 @@
+---
+
+grafana_enabled: false
+
+grafana_dir: "{{ services_dir }}/grafana"
+grafana_dashboards_dir: "{{ grafana_dir }}/dashboards"
+
+grafana_host: localhost
+grafana_port: 3000
+
+grafana_image: grafana/grafana:latest
+grafana_container_name: grafana
+grafana_container_dns_servers: []
+grafana_container_labels: {}
+grafana_container_log_driver: syslog
+grafana_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: grafana
+grafana_container_networks: []
+grafana_container_restart_policy: always
+
+grafana_volume: "{{ grafana_container_name }}_data"
+
+grafana_dashboards: []
+
+grafana_datasource_prometheus: false
+grafana_datasource_prometheus_name: Prometheus
+grafana_datasource_prometheus_url: http://localhost:9090
+
+grafana_datasource_loki: false
+grafana_datasource_loki_name: Loki
+grafana_datasource_loki_url: http://localhost:3100
+
+grafana_domain: grafana.example.com
+
+grafana_auth_user: grafana
+grafana_auth_password: grafana

@@ -1,0 +1,22 @@
+---
+
+datasources:
+{% if grafana_datasource_prometheus %}
+  - name: '{{ grafana_datasource_prometheus_name }}'
+    url: '{{ grafana_datasource_prometheus_url }}'
+    type: prometheus
+    access: proxy
+    editable: true
+    is_default: true
+    org_id: 1
+    version: 1
+{% endif %}
+
+{% if grafana_datasource_loki %}
+  - name: '{{ grafana_datasource_loki_name }}'
+    url: '{{ grafana_datasource_loki_url }}'
+    type: loki
+    access: proxy
+    jsonData:
+      maxLines: 1000
+{% endif %}
