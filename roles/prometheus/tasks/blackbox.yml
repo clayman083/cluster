@@ -1,0 +1,25 @@
+---
+
+- name: Prepare folders
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ prometheus_service_dir }}"
+
+- name: Upload blackbox exporter config
+  copy: src=blackbox.yml dest="{{ prometheus_service_dir }}/blackbox.yml"
+
+- name: Pull blackbox exporter image
+  docker_image: name={{ blackbox_image }} source=pull
+
+- name: Run blackbox exporter container
+  docker_container:
+    name: "{{ blackbox_container_name }}"
+    image: "{{ blackbox_image }}"
+    command: --config.file=/config/blackbox.yml
+    log_driver: "{{ blackbox_container_log_driver }}"
+    log_options: "{{ blackbox_container_log_options }}"
+    published_ports:
+      - "{{ blackbox_host }}:{{ blackbox_port }}:9115"
+    restart_policy: "{{ blackbox_container_restart_policy}}"
+    volumes:
+      - "{{ prometheus_service_dir }}/blackbox.yml:/config/blackbox.yml"

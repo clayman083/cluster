@@ -1,0 +1,86 @@
+---
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+  external_labels:
+    monitor: 'prometheus'
+
+
+rule_files:
+  - "/etc/prometheus/rules.d/*.rules.yml"
+
+{% if alertmanager_enabled %}
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets:
+          - 'alertmanager:9093'
+{% endif %}
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+{% if prometheus_server_exporters %}
+  - job_name: 'exporters'
+    consul_sd_configs:
+      - server: '{{ prometheus_server_consul_host }}:{{ prometheus_server_consul_port }}'
+        services: [{% for service in prometheus_server_exporters %}'{{ service }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+    relabel_configs:
+      - source_labels: ['__meta_consul_service']
+        target_label: exporter
+      - source_labels: ['__meta_consul_dc']
+        target_label: dc
+      - source_labels: ['__meta_consul_node']
+        regex:         '(.*)'
+        target_label:  'node'
+        replacement:   '$1'
+      - source_labels: ['__meta_consul_service_metadata_tier']
+        regex:         '(.*)'
+        target_label:  'tier'
+        replacement:   '$1'
+{% endif %}
+
+{% if prometheus_server_blackbox_targets|default([]) %}
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_200_module]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+{% for target in prometheus_server_blackbox_targets %}
+        - {{ target }}
+{% endfor %}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: {{ blackbox_host }}:{{ blackbox_port }}  # The blackb
+{% endif %}
+
+{% if prometheus_server_apps %}
+  - job_name: 'apps'
+    metrics_path: /-/metrics
+    consul_sd_configs:
+      - server: '{{ prometheus_server_consul_host }}:{{ prometheus_server_consul_port }}'
+        services: [{% for app in prometheus_server_apps %}'{{ app }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+    relabel_configs:
+      - source_labels: ['__meta_consul_service']
+        target_label: app_name
+      - source_labels: ['__meta_consul_dc']
+        target_label: dc
+      - source_labels: ['__meta_consul_node']
+        regex:         '(.*)'
+        target_label:  'node'
+        replacement:   '$1'
+      - source_labels: ['__meta_consul_service_metadata_tier']
+        regex:         '(.*)'
+        target_label:  'tier'
+        replacement:   '$1'
+{% endif %}

@@ -1,0 +1,19 @@
+---
+
+- import_tasks: server.yml
+  when: prometheus_server_enabled|default(False)
+  tags:
+    - prometheus
+
+- import_tasks: node_exporter.yml
+  tags:
+    - prometheus
+
+- import_tasks: cadvisor.yml
+  tags:
+    - prometheus
+
+- import_tasks: blackbox.yml
+  when: prometheus_server_enabled|default(False)
+  tags:
+    - prometheus

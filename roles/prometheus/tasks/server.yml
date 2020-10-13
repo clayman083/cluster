@@ -1,0 +1,39 @@
+---
+
+- name: Prepare folders
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ prometheus_service_dir }}"
+    - "{{ prometheus_rules_dir }}"
+
+- name: Assemble config
+  template: src=prometheus.yml.j2 dest={{ prometheus_service_dir }}/prometheus.yml
+  notify: reload prometheus
+
+- name: Pull image
+  docker_image: name={{ prometheus_image }} source=pull
+
+- name: Create volume container
+  docker_volume: name={{ prometheus_volume }}
+
+- name: Run container
+  docker_container:
+    name: "{{ prometheus_container_name }}"
+    image: "{{ prometheus_image }}"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention={{ prometheus_server_storage_retention }}'
+    dns_servers: "{{ prometheus_container_dns_servers }}"
+    env: "{{ prometheus_container_env }}"
+    labels: "{{ prometheus_container_labels }}"
+    log_driver: "{{ prometheus_container_log_driver }}"
+    log_options: "{{ prometheus_container_log_options }}"
+    networks: "{{ prometheus_container_networks|default([]) }}"
+    published_ports:
+      - "{{ prometheus_server_host }}:{{ prometheus_server_port }}:9090"
+    restart_policy: "{{ prometheus_container_restart_policy }}"
+    volumes:
+      - "{{ prometheus_service_dir }}/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "{{ prometheus_rules_dir }}:/etc/prometheus/rules.d"
+      - "{{ prometheus_volume }}:/prometheus"

@@ -1,0 +1,139 @@
+---
+
+# Node exporter settings
+node_exporter_host: localhost
+node_exporter_port: 9100
+
+node_exporter_image: prom/node-exporter:latest
+node_exporter_container_name: node_exporter
+node_exporter_container_networks: []
+node_exporter_container_labels: {}
+node_exporter_container_log_driver: syslog
+node_exporter_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: node_exporter
+node_exporter_container_restart_policy: always
+
+node_exporter_service:
+  name: node-exporter
+  host: "{{ node_exporter_host }}"
+  port: "{{ node_exporter_port }}"
+  tags:
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    tier: "{{ tier }}"
+  checks:
+    - id: "node_exporter_check"
+      name: "Prometheus exporter for Node metrics"
+      http: "http://{{ node_exporter_host }}:{{ node_exporter_port }}"
+      interval: "10s"
+
+
+# Cadvisor exporter settings
+cadvisor_host: localhost
+cadvisor_port: 8080
+
+cadvisor_image: google/cadvisor:latest
+cadvisor_container_name: cadvisor_exporter
+cadvisor_container_networks: []
+cadvisor_container_labels: {}
+cadvisor_container_log_driver: syslog
+cadvisor_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: cadvisor_exporter
+cadvisor_container_restart_policy: always
+
+cadvisor_service:
+  name: cadvisor-exporter
+  host: "{{ cadvisor_host }}"
+  port: "{{ cadvisor_port }}"
+  tags:
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    env: "{{ env }}"
+    tier: "{{ tier }}"
+  checks:
+    - id: "cadvisor_exporter_check"
+      name: "Prometheus exporter for Cadvisor metrics"
+      http: "http://{{ cadvisor_host }}:{{ cadvisor_port }}"
+      interval: "10s"
+
+
+# Blackbox exporter settings
+blackbox_host: localhost
+blackbox_port: 9115
+
+blackbox_image: prom/blackbox-exporter:latest
+blackbox_container_name: blackbox_exporter
+blackbox_container_networks: []
+blackbox_container_labels: {}
+blackbox_container_log_driver: syslog
+blackbox_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: blackbox_exporter
+blackbox_container_restart_policy: always
+
+blackbox_service:
+  name: blackbox-exporter
+  host: "{{ blackbox_host }}"
+  port: "{{ blackbox_port }}"
+  tags:
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    tier: "{{ tier }}"
+  checks:
+    - id: "blackbox_exporter_check"
+      name: "Prometheus exporter for Blackbox metrics"
+      http: "http://{{ blackbox_host }}:{{ blackbox_port }}"
+      interval: "10s"
+
+
+# Prometheus settings
+prometheus_service_dir: /opt/services/prometheus
+prometheus_rules_dir: "{{ prometheus_service_dir }}/rules.d"
+
+# Prometheus server settings
+prometheus_server_enabled: false
+prometheus_server_host: localhost
+prometheus_server_port: 9090
+prometheus_server_storage_retention: 30d
+prometheus_server_jobs: []
+prometheus_server_rules: []
+prometheus_server_exporters: []
+prometheus_server_blackbox_targets: []
+prometheus_server_apps: []
+
+prometheus_server_consul_host: localhost
+prometheus_server_consul_port: 8500
+
+# Prometheus docker container settings
+prometheus_image: prom/prometheus:latest
+prometheus_container_name: prometheus
+prometheus_container_dns_servers: []
+prometheus_container_networks: []
+prometheus_container_labels: {}
+prometheus_container_env: {}
+prometheus_container_log_driver: syslog
+prometheus_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: prometheus
+prometheus_container_restart_policy: always
+
+prometheus_volume: "{{ prometheus_container_name }}_data"
+
+prometheus_service:
+  name: prometheus
+  host: "{{ prometheus_server_host }}"
+  port: "{{ prometheus_server_port }}"
+  tags:
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    tier: "{{ tier }}"
+
+
+# Alertmanager settings
+alertmanager_enabled: False

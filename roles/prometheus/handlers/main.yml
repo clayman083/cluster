@@ -1,0 +1,6 @@
+---
+# handlers file for prometheus
+
+- name: Reload prometheus server
+  command: "docker restart {{ prometheus_container_name }}"
+  listen: "reload prometheus"

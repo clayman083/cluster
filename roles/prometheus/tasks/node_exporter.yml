@@ -1,0 +1,20 @@
+---
+
+- name: Pull node exporter image
+  docker_image: name={{ node_exporter_image }} source=pull
+
+- name: Run node exporter container
+  docker_container:
+    name: "{{ node_exporter_container_name }}"
+    image: "{{ node_exporter_image }}"
+    env:
+      NODE_ID: "{{ '{{' }}.Node.ID{{ '}}' }}"
+    log_driver: "{{ node_exporter_container_log_driver }}"
+    log_options: "{{ node_exporter_container_log_options }}"
+    published_ports:
+      - "{{ node_exporter_host }}:{{ node_exporter_port }}:9100"
+    restart_policy: "{{ node_exporter_container_restart_policy }}"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
