@@ -37,8 +37,8 @@
       - "{{ consul_host }}:8301:8301/udp"
       - "{{ consul_host }}:8302:8302"
       - "{{ consul_host }}:8302:8302/udp"
-      - "{{ consul_host }}:8400:8300"
       - "{{ consul_host }}:{{ consul_port }}:8500"
+      - "{{ consul_host }}:8600:8600"
       - "{{ consul_host }}:8600:8600/udp"
     restart_policy: "{{ consul_container_restart_policy }}"
     volumes:

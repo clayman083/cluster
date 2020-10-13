@@ -1,14 +1,14 @@
 {
     "advertise_addr" : "{{ private_network.address }}",
     "client_addr": "0.0.0.0",
+    "bind_addr": "0.0.0.0",
     "data_dir": "/consul/data",
     "datacenter": "{{ consul_agent_datacenter }}",
     "node_name": "{{ consul_agent_node }}",
 {% if consul_agent_server %}
-{% set current_host = [ansible_hostname] %}
     "bootstrap_expect": {{ consul_agent_servers|length }},
-{% if consul_agent_servers|difference(current_host)|length > 0 %}
-    "retry_join": [{% for host in consul_agent_servers|difference(current_host) %}"{{ hostvars[host]['private_network']['address'] }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+{% if consul_agent_servers|length > 0 %}
+    "retry_join": [{% for host in consul_agent_servers %}"{{ hostvars[host]['private_network']['address'] }}"{% if not loop.last %}, {% endif %}{% endfor %}],
 {% endif %}
     "server": true,
     "ui": true,
