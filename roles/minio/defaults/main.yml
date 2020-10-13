@@ -1,0 +1,26 @@
+---
+
+minio_service_dir: "{{ services_dir }}/minio"
+
+minio_enabled: false
+
+minio_host: localhost
+minio_port: 9000
+
+minio_image: minio/minio:latest
+
+minio_container_name: minio
+minio_container_labels: {}
+minio_container_log_driver: syslog
+minio_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: minio
+minio_container_networks: []
+minio_container_restart_policy: always
+
+minio_volume: "{{ minio_container_name }}_data"
+
+minio_access_key: ''
+minio_secret_key: ''
+
+minio_services: []

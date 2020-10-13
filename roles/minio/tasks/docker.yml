@@ -1,0 +1,26 @@
+---
+
+- name: Pull image
+  docker_image: name={{ minio_image }} source=pull
+
+- name: Create volume
+  docker_volume: name={{ minio_volume }}
+
+- name: Run container
+  docker_container:
+    name: "{{ minio_container_name }}"
+    image: "{{ minio_image }}"
+    command: server /data
+    env:
+      MINIO_ACCESS_KEY: "{{ minio_access_key }}"
+      MINIO_SECRET_KEY: "{{ minio_secret_key }}"
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
+    labels: "{{ minio_container_labels }}"
+    log_driver: "{{ minio_container_log_driver }}"
+    log_options: "{{ minio_container_log_options }}"
+    networks: "{{ minio_container_networks|default([]) }}"
+    published_ports:
+      - "{{ minio_host }}:{{ minio_port }}:9000"
+    restart_policy: "{{ consul_container_restart_policy }}"
+    volumes:
+      - "{{ minio_volume }}:/data"
