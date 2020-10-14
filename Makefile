@@ -1,5 +1,11 @@
 .PHONY:
 
+install:
+	python3 -m pip install ansible ansible-lint
+
+lint:
+	ansible-lint
+
 clean:
 	rm -rf dist
 
