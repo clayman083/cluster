@@ -1,0 +1,15 @@
+---
+
+- name: Restart loki
+  command: docker restart {{ loki_container_name }}
+  listen: "restart loki"
+
+- name: Restart promtail
+  command: docker restart {{ promtail_container_name }}
+  listen: "restart promtail"
+
+- name: Restart syslog
+  systemd:
+    name: rsyslog
+    state: restarted
+  listen: "restart syslog"

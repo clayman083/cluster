@@ -1,0 +1,41 @@
+---
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: {{ promtail_volume_dir }}/positions.yaml
+
+client:
+  url: http://{{ loki_host }}:{{ loki_port }}/api/prom/push
+
+scrape_configs:
+  - job_name: syslog
+    syslog:
+      listen_address: 0.0.0.0:1514
+      idle_timeout: 60s
+      label_structured_data: yes
+{% if promtail_syslog_labels|length > 0 %}
+      labels:
+{% for key, label in promtail_syslog_labels.items() %}
+        {{ key }}: {{ label }}
+{% endfor %}
+{% endif %}
+    relabel_configs:
+      - source_labels: ['__syslog_message_hostname']
+        target_label: 'hostname'
+      - source_labels: ['__syslog_message_app_name']
+        target_label: 'app_name'
+{% for job in promtail_jobs %}
+  - job_name: {{ job.name }}
+    entry_parser: raw
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+{% for key, label in job.labels.items() %}
+        {{ key }}: {{ label }}
+{% endfor %}
+        __path__: {{ job.path }}
+{% endfor %}

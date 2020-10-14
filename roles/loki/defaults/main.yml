@@ -1,0 +1,123 @@
+---
+
+loki_service_dir: "{{ services_dir }}/loki"
+
+# Loki server settings
+loki_enabled: false
+
+loki_host: localhost
+loki_port: 3100
+
+loki_image: grafana/loki:latest
+loki_container_name: loki
+loki_container_dns_servers: []
+loki_container_networks: []
+loki_container_labels: {}
+loki_container_env: {}
+loki_container_log_driver: syslog
+loki_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: loki
+loki_container_restart_policy: always
+
+loki_volume: "{{ loki_container_name }}_data"
+loki_volume_dir: /tmp/loki
+
+loki_boltdb_storage: false
+loki_boltdb_storage_dir: "{{ loki_volume_dir }}/index"
+
+loki_cassandra_storage: false
+loki_cassandra_storage_username: loki
+loki_cassandra_storage_password: loki
+loki_cassandra_storage_addresses:
+  - localhost
+loki_cassandra_storage_keyspace: lokiindex
+
+loki_aws_storage: false
+loki_aws_storage_s3: s3://access_key:secret_access_key@region/bucket_name
+
+loki_filesystem_storage: false
+loki_filesystem_storage_dir: "{{ loki_volume_dir }}/chunks"
+
+loki_schema_configs:
+  - from: 2020-10-01
+    store: boltdb
+    object_store: filesystem
+    schema: v11
+    index:
+      prefix: index_
+      period: 720h
+
+loki_service:
+  name: loki
+  host: "{{ loki_host }}"
+  port: "{{ loki_port }}"
+  tags:
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    tier: "{{ tier }}"
+  checks:
+    - id: "loki_check"
+      name: "Loki server"
+      http: "http://{{ loki_host }}:{{ loki_port }}/ready"
+      interval: "10s"
+
+loki_exporter_service:
+  name: loki-exporter
+  host: "{{ loki_host }}"
+  port: "{{ loki_port }}"
+  tags:
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    tier: "{{ tier }}"
+  checks:
+    - id: "loki_exporter_check"
+      name: "Prometheus exporter for Loki metrics"
+      http: "http://{{ loki_host }}:{{ loki_port }}/ready"
+      interval: "10s"
+
+loki_services: []
+
+
+# Promtail settings
+promtail_host: localhost
+promtail_port: 9080
+
+promtail_syslog_host: localhost
+promtail_syslog_port: 1514
+
+promtail_syslog_labels: {}
+
+promtail_jobs: []
+promtail_image: grafana/promtail:latest
+promtail_container_name: promtail
+promtail_container_dns_servers: []
+promtail_container_networks: []
+promtail_container_labels: {}
+promtail_container_env: {}
+promtail_container_log_driver: syslog
+promtail_container_log_options:
+  syslog-address: unixgram:///dev/log
+  tag: promtail
+promtail_container_restart_policy: always
+
+promtail_volume: "{{ promtail_container_name }}_data"
+
+promtail_volume_dir: /tmp
+
+promtail_exporter_service:
+  name: promtail-exporter
+  host: "{{ promtail_host }}"
+  port: "{{ promtail_port }}"
+  tags:
+    - "{{ tier }}"
+  meta:
+    hostname: "{{ ansible_hostname }}"
+    tier: "{{ tier }}"
+  checks:
+    - id: "promtail_exporter_check"
+      name: "Prometheus exporter for Promtail metrics"
+      http: "http://{{ promtail_host }}:{{ promtail_port }}/ready"
+      interval: "10s"

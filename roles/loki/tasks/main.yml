@@ -1,0 +1,10 @@
+---
+
+- import_tasks: server.yml
+  when: loki_enabled|default(False)
+  tags:
+    - loki
+
+- import_tasks: promtail.yml
+  tags:
+    - loki

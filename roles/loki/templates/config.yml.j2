@@ -1,0 +1,57 @@
+---
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+ingester:
+  lifecycler:
+    address: 0.0.0.0
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  chunk_idle_period: 15m
+
+schema_config:
+  configs:
+{% for config in loki_schema_configs %}
+  - from: {{ config.from }}
+    store: {{ config.store }}
+    object_store: {{ config.object_store }}
+    schema: {{ config.schema }}
+    index:
+      prefix: {{ config.index.prefix }}
+      period: {{ config.index.period }}
+{% endfor %}
+
+storage_config:
+{% if loki_boltdb_storage %}
+  boltdb:
+    directory: {{ loki_boltdb_storage_dir }}
+{% endif %}
+
+{% if loki_filesystem_storage %}
+  filesystem:
+    directory: {{ loki_filesystem_storage_dir }}
+{% endif %}
+
+{% if loki_aws_storage %}
+  aws:
+    s3: {{ loki_aws_storage_s3 }}
+    s3forcepathstyle: true
+{% endif %}
+
+{% if loki_cassandra_storage %}
+  cassandra:
+    username: {{ loki_cassandra_storage_username }}
+    password: {{ loki_cassandra_storage_password }}
+    addresses: {% for addr in loki_cassandra_storage_addresses %}{{ addr }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+    auth: true
+    keyspace: {{ loki_cassandra_storage_keyspace }}
+{% endif %}
+
+limits_config:
+  enforce_metric_name: false

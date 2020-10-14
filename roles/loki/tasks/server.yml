@@ -1,0 +1,31 @@
+---
+
+- name: Prepare folders
+  file: path={{ loki_service_dir }} state=directory mode=0755
+
+- name: Assemble config
+  template: src=config.yml.j2 dest={{ loki_service_dir }}/config.yml
+  notify: restart loki
+
+- name: Pull image
+  docker_image: name={{ loki_image }} source=pull
+
+- name: Create volume
+  docker_volume: name={{ loki_volume }}
+
+- name: Run container
+  docker_container:
+    name: "{{ loki_container_name }}"
+    image: "{{ loki_image }}"
+    command: -config.file=/etc/loki/config.yml
+    dns_servers: "{{ loki_container_dns_servers }}"
+    labels: "{{ loki_container_labels }}"
+    log_driver: "{{ loki_container_log_driver }}"
+    log_options: "{{ loki_container_log_options }}"
+    networks: "{{ loki_container_networks|default([]) }}"
+    published_ports:
+      - "{{ loki_host }}:{{ loki_port }}:3100"
+    restart_policy: "{{ prometheus_container_restart_policy }}"
+    volumes:
+      - "{{ loki_volume }}:{{ loki_volume_dir }}"
+      - "{{ loki_service_dir }}/config.yml:/etc/loki/config.yml"
