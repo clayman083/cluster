@@ -12,7 +12,7 @@
     log_options: "{{ cadvisor_container_log_options }}"
     published_ports:
       - "{{ cadvisor_host }}:{{ cadvisor_port }}:8080"
-    restart_policy: "{{ cadvisor_container_restart_policy}}"
+    restart_policy: "{{ cadvisor_container_restart_policy }}"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw

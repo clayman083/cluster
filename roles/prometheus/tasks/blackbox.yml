@@ -20,6 +20,6 @@
     log_options: "{{ blackbox_container_log_options }}"
     published_ports:
       - "{{ blackbox_host }}:{{ blackbox_port }}:9115"
-    restart_policy: "{{ blackbox_container_restart_policy}}"
+    restart_policy: "{{ blackbox_container_restart_policy }}"
     volumes:
       - "{{ prometheus_service_dir }}/blackbox.yml:/config/blackbox.yml"
