@@ -1,7 +1,7 @@
 .PHONY:
 
 install:
-	python3 -m pip install ansible ansible-lint
+	python3 -m pip install ansible==2.10.0 ansible-lint==4.3.5
 
 lint:
 	ansible-lint
