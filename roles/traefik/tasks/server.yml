@@ -8,7 +8,7 @@
     - "{{ traefik_conf_dir }}"
 
 - name: Assemble config files
-  template: src=traefik.yml.j2 dest={{ traefik_service_dir }}/traefik.yml backup=true
+  template: src=traefik.yml.j2 dest={{ traefik_service_dir }}/traefik.yml backup=true mode=0644
   notify: reload traefik
 
 - name: Pull image

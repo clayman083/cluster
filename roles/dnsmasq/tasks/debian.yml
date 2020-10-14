@@ -5,8 +5,8 @@
     name: dnsmasq
 
 - name: Create folders
-  file: path={{ dnsmasq_conf }} state=directory
+  file: path={{ dnsmasq_conf }} state=directory mode=0755
 
 - name: Update config file
-  template: src=dnsmasq.conf.j2 dest=/etc/dnsmasq.conf
+  template: src=dnsmasq.conf.j2 dest=/etc/dnsmasq.conf mode=0644
   notify: restart dnsmasq

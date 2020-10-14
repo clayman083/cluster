@@ -7,10 +7,10 @@
     - "{{ consul_conf_dir }}"
 
 - name: Assemble consul agent config
-  template: src=config.json.j2 dest={{ consul_service_dir }}/config.json backup=true
+  template: src=config.json.j2 dest={{ consul_service_dir }}/config.json backup=true mode=0644
 
 - name: Assemble dnsmasq config
-  template: src={{ item.src }}.j2 dest={{ item.dest }}
+  template: src={{ item.src }}.j2 dest={{ item.dest }} mode=0644
   with_items:
     - src: dnsmasq.conf
       dest: "{{ dnsmasq_conf_dir }}/consul.conf"

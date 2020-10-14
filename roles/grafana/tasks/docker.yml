@@ -1,13 +1,13 @@
 ---
 
 - name: Prepare folders
-  file: path={{ item }} state=directory
+  file: path={{ item }} state=directory mode=0755
   with_items:
     - "{{ grafana_dir }}"
     - "{{ grafana_dashboards_dir }}"
 
 - name: Assemble datasources config
-  template: src=datasources.yml.j2 dest={{ grafana_dir }}/datasources.yml
+  template: src=datasources.yml.j2 dest={{ grafana_dir }}/datasources.yml mode=0644
   when: grafana_datasource_prometheus|default(False) or grafana_datasource_loki|default(False)
   notify: restart grafana
 

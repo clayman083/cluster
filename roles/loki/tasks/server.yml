@@ -4,7 +4,7 @@
   file: path={{ loki_service_dir }} state=directory mode=0755
 
 - name: Assemble config
-  template: src=config.yml.j2 dest={{ loki_service_dir }}/config.yml
+  template: src=config.yml.j2 dest={{ loki_service_dir }}/config.yml mode=0644
   notify: restart loki
 
 - name: Pull image

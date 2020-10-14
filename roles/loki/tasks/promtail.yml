@@ -33,5 +33,5 @@
       - /var/log:/var/log
 
 - name: Assemble syslog config
-  template: src=syslog.conf.j2 dest=/etc/rsyslog.d/promtail.conf
+  template: src=syslog.conf.j2 dest=/etc/rsyslog.d/promtail.conf mode=0644
   notify: restart syslog

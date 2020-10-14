@@ -1,12 +1,12 @@
 ---
 
 - name: Prepare folders
-  file: path={{ item }} state=directory
+  file: path={{ item }} state=directory mode=0755
   with_items:
     - "{{ prometheus_service_dir }}"
 
 - name: Upload blackbox exporter config
-  copy: src=blackbox.yml dest="{{ prometheus_service_dir }}/blackbox.yml"
+  copy: src=blackbox.yml dest="{{ prometheus_service_dir }}/blackbox.yml" mode=0644
 
 - name: Pull blackbox exporter image
   docker_image: name={{ blackbox_image }} source=pull

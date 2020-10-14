@@ -8,7 +8,7 @@
     name: "{{ node_exporter_container_name }}"
     image: "{{ node_exporter_image }}"
     env:
-      NODE_ID: "{{ '{{' }}.Node.ID{{ '}}' }}"
+      NODE_ID: "{{ '{{' }}.Node.ID{{ '}}' }}"  # noqa 207
     log_driver: "{{ node_exporter_container_log_driver }}"
     log_options: "{{ node_exporter_container_log_options }}"
     published_ports:
