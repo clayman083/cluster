@@ -1,12 +1,11 @@
 ---
 
 entryPoints:
-  web:
-    address: :80
-  websecure:
-    address: :443
-  metrics:
-    address: :8800
+{% for entry_point in traefik_entry_points.values() %}
+  {{ entry_point.name }}:
+    address: :{{ entry_point.internal_port }}
+
+{% endfor %}
 
 api:
   dashboard: true

@@ -24,10 +24,7 @@
     log_driver: "{{ traefik_container_log_driver }}"
     log_options: "{{ traefik_container_log_options }}"
     networks: "{{ traefik_container_networks|default([]) }}"
-    published_ports:
-      - "{{ traefik_insecure_host }}:{{ traefik_insecure_port }}:80"
-      - "{{ traefik_secure_host }}:{{ traefik_secure_port }}:443"
-      - "{{ traefik_exporter_host }}:{{ traefik_exporter_port }}:8800"
+    published_ports: "{{ traefik_container_ports|default([]) }}"
     restart_policy: "{{ traefik_container_restart_policy }}"
     volumes:
       - "{{ traefik_service_dir }}/traefik.yml:/etc/traefik/traefik.yaml"

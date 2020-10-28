@@ -30,15 +30,27 @@ traefik_container_log_options:
   tag: traefik
 traefik_container_networks: []
 traefik_container_restart_policy: always
+traefik_container_ports:
+  - "{{ traefik_entry_points.web.host }}:{{ traefik_entry_points.web.external_port }}:{{ traefik_entry_points.web.internal_port }}"
+  - "{{ traefik_entry_points.websecure.host }}:{{ traefik_entry_points.websecure.external_port }}:{{ traefik_entry_points.websecure.internal_port }}"
+  - "{{ traefik_entry_points.exporter.host }}:{{ traefik_entry_points.exporter.external_port }}:{{ traefik_entry_points.exporter.internal_port }}"
 
-traefik_insecure_host: localhost
-traefik_insecure_port: 80
-
-traefik_secure_host: localhost
-traefik_secure_port: 443
-
-traefik_exporter_host: localhost
-traefik_exporter_port: 8800
+traefik_entry_points:
+  web:
+    name: web
+    host: localhost
+    internal_port: 80
+    external_port: 80
+  websecure:
+    name: websecure
+    host: localhost
+    internal_port: 443
+    external_port: 443
+  exporter:
+    name: exporter
+    host: localhost
+    internal_port: 8800
+    external_port: 8800
 
 traefik_basic_auth: []
 
@@ -47,9 +59,9 @@ traefik_letsencrypt_email: ''
 traefik_letsencrypt_resolver: acmeresolver
 
 traefik_service:
-  name: traefik
-  host: "{{ traefik_insecure_host }}"
-  port: "{{ traefik_insecure_port }}"
+  name: "traefik-{{ traefik_entry_points.web.name }}"
+  host: "{{ traefik_entry_points.web.host }}"
+  port: "{{ traefik_entry_points.web.external_port }}"
   tags:
     - "{{ tier }}"
   meta:
@@ -57,9 +69,9 @@ traefik_service:
     tier: "{{ tier }}"
 
 traefik_secure_service:
-  name: traefik-secure
-  host: "{{ traefik_secure_host }}"
-  port: "{{ traefik_secure_port }}"
+  name: "traefik-{{ traefik_entry_points.websecure.name }}"
+  host: "{{ traefik_entry_points.websecure.host }}"
+  port: "{{ traefik_entry_points.websecure.external_port }}"
   tags:
     - "{{ tier }}"
   meta:
@@ -67,9 +79,9 @@ traefik_secure_service:
     tier: "{{ tier }}"
 
 traefik_exporter_service:
-  name: traefik-exporter
-  host: "{{ traefik_exporter_host }}"
-  port: "{{ traefik_exporter_port }}"
+  name: "traefik-{{ traefik_entry_points.exporter.name }}"
+  host: "{{ traefik_entry_points.exporter.host }}"
+  port: "{{ traefik_entry_points.exporter.external_port }}"
   tags:
     - "{{ tier }}"
   meta:
