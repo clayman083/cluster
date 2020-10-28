@@ -52,7 +52,7 @@ log:
 metrics:
   prometheus:
     addEntryPointsLabels: true
-    entryPoint: metrics
+    entryPoint: {{ traefik_entry_points.exporter.name }}
     buckets:
       - 0.1
       - 0.3
