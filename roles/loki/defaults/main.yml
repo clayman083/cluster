@@ -87,6 +87,7 @@ promtail_port: 9080
 
 promtail_syslog_host: localhost
 promtail_syslog_port: 1514
+promtail_syslog_framing: octet-counted
 
 promtail_syslog_labels: {}
 
